@@ -31,13 +31,13 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? "bg-gradient-to-r from-sky-600/95 via-orange-400/80 to-sky-400/90 backdrop-blur-md shadow-2xl"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between transition-all duration-300">
+  className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+    scrolled
+      ? "bg-gradient-to-r from-sky-600/5 via-orange-400/5 to-sky-400/5 backdrop-blur-md shadow-2xl"
+      : "bg-transparent"
+  }`}
+>
+      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between transition-all duration-300">
         {/* Logo */}
         <div className="flex items-center gap-3">
           <Image
@@ -84,10 +84,17 @@ export default function Header() {
         <div className="flex items-center gap-4">
           {/* Social */}
           <div className="hidden lg:flex items-center gap-1 ml-2">
-            <a href="#" title="Facebook" className="p-1 hover:scale-110"><FaFacebookF className="text-sky-600" /></a>
-            <a href="#" title="LinkedIn" className="p-1 hover:scale-110"><FaLinkedinIn className="text-sky-700" /></a>
-            <a href="#" title="GitHub" className="p-1 hover:scale-110"><FaGithub className="text-gray-800" /></a>
-          </div>
+  <a href="#" title="Facebook" className="p-1">
+    <FaFacebookF className="text-yellow-400" />
+  </a>
+  <a href="#" title="LinkedIn" className="p-1">
+    <FaLinkedinIn className="text-yellow-500" />
+  </a>
+  <a href="#" title="GitHub" className="p-1">
+    <FaGithub className="text-yellow-600" />
+  </a>
+</div>
+
           {/* CTA */}
           <Link href="/Auth" className="bg-gradient-to-r from-orange-500 via-orange-400 to-sky-500 text-gray-800 px-6 py-2 rounded-full font-semibold shadow hover:scale-105 hover:from-orange-400 hover:to-sky-400 transition-all">
             Đăng Nhập

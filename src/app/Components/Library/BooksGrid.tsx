@@ -99,11 +99,13 @@ export default function BooksGrid({
               )}
 
               {/* Overlay đọc ngay */}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-end justify-center opacity-0 group-hover:opacity-100">
-                <button className="mb-3 px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg text-sm hover:bg-blue-50 transition">
-                  Đọc ngay
-                </button>
-              </div>
+              <div className="absolute inset-0 flex items-end justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
+  <div className="absolute inset-0 bg-black/30 transition-opacity duration-300"></div>
+  <button className="relative mb-3 px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg text-sm hover:bg-blue-50 transition">
+    Đọc ngay
+  </button>
+</div>
+
             </div>
 
             {/* Thông tin */}

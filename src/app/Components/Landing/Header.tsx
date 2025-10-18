@@ -1,12 +1,13 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FaHome, FaBook, FaFileAlt, FaBlog, FaInfoCircle, FaEnvelope, FaGlobe, FaFacebookF, FaLinkedinIn, FaGithub } from "react-icons/fa";
 
 const menuItems = [
   { label: "Home", icon: FaHome, href: "/" },
-  { label: "Library", icon: FaBook, href: "/library" },
+  { label: "Library", icon: FaBook, href: "/Library" },
   { label: "Pages", icon: FaFileAlt, href: "#" },
   { label: "Blogs", icon: FaBlog, href: "#" },
   { label: "About", icon: FaInfoCircle, href: "#" },
@@ -14,6 +15,11 @@ const menuItems = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
+
+  // 🟢 Ẩn Header ở trang /Auth
+  if (pathname === "/Auth") return null;
+
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
@@ -34,23 +40,22 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between transition-all duration-300">
         {/* Logo */}
         <div className="flex items-center gap-3">
-  <Image
-    src="/Logo.png"
-    alt="logo"
-    width={52}
-    height={52}
-    className="rounded-full shadow-lg shadow-blue-400 border border-white
-      brightness-125 hover:brightness-200 hover:scale-110 hover:drop-shadow-md 
-      transition-all duration-300"
-  />
-  <span className={`text-xl font-bold tracking-wide ${scrolled ? "text-white drop-shadow-lg" : "text-white"}`}
-  style={{
-    fontFamily: "'Playfair Display', sans-serif",
-  }}>
-    MeensLIB
-  </span>
-</div>
-
+          <Image
+            src="/Logo.png"
+            alt="logo"
+            width={52}
+            height={52}
+            className="rounded-full shadow-lg shadow-blue-400 border border-white
+              brightness-125 hover:brightness-200 hover:scale-110 hover:drop-shadow-md 
+              transition-all duration-300"
+          />
+          <span
+            className={`text-xl font-bold tracking-wide ${scrolled ? "text-white drop-shadow-lg" : "text-white"}`}
+            style={{ fontFamily: "'Playfair Display', sans-serif" }}
+          >
+            MeensLIB
+          </span>
+        </div>
 
         {/* Navigation */}
         <nav className="hidden md:flex gap-2">
@@ -67,9 +72,7 @@ export default function Header() {
                 className="relative after:block after:absolute after:left-0 after:w-0 after:h-[2px] 
                             after:bg-gradient-to-r after:from-orange-400 after:to-sky-500 
                             after:transition-all group-hover:after:w-full after:bottom-0"
-                            style={{
-                                fontFamily: "'Playfair Display', sans-serif",
-                              }}
+                style={{ fontFamily: "'Playfair Display', sans-serif" }}
               >
                 {label}
               </span>
@@ -79,14 +82,6 @@ export default function Header() {
 
         {/* Right controls */}
         <div className="flex items-center gap-4">
-          {/* Language/theme */}
-          {/* <button
-            className={`flex items-center gap-1 text-sm font-medium rounded-full px-3 py-1.5 transition-all
-              ${scrolled ? "bg-white/20 text-white hover:bg-white/40" : "bg-sky-50 text-sky-700 hover:bg-sky-100"}
-            `}
-          >
-            <FaGlobe size={17} className="text-orange-400" /> EN
-          </button> */}
           {/* Social */}
           <div className="hidden lg:flex items-center gap-1 ml-2">
             <a href="#" title="Facebook" className="p-1 hover:scale-110"><FaFacebookF className="text-sky-600" /></a>
@@ -94,9 +89,9 @@ export default function Header() {
             <a href="#" title="GitHub" className="p-1 hover:scale-110"><FaGithub className="text-gray-800" /></a>
           </div>
           {/* CTA */}
-          <button className="bg-gradient-to-r from-orange-500 via-orange-400 to-sky-500 text-gray-800 px-6 py-2 rounded-full font-semibold shadow hover:scale-105 hover:from-orange-400 hover:to-sky-400 transition-all">
+          <Link href="/Auth" className="bg-gradient-to-r from-orange-500 via-orange-400 to-sky-500 text-gray-800 px-6 py-2 rounded-full font-semibold shadow hover:scale-105 hover:from-orange-400 hover:to-sky-400 transition-all">
             Đăng Nhập
-          </button>
+          </Link>
         </div>
       </div>
     </header>

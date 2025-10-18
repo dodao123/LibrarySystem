@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Playfair_Display, Lora } from "next/font/google";
 import { useEffect, useState } from "react";
@@ -48,7 +48,7 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex items-end justify-start px-10 pb-20">
+      <div className="relative z-10 h-full md:ml-20 flex items-end justify-start px-10 pb-20">
         <div className="text-left max-w-4xl">
           <h1
             className={`text-5xl md:text-7xl font-bold text-white mb-2 ${playfair.className}`}

@@ -85,3 +85,17 @@ html {
 .flip-card-back {
   transform: rotateY(180deg);
 }
+
+/* Hide scrollbar for webkit browsers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', sans-serif;
+}

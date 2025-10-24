@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface RegisterProps {
   onFlip: () => void;
 }
 
 export default function Register({ onFlip }: RegisterProps) {
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleRegister = () => {
-    if (!email || !password || !confirmPassword) {
-      setMessage('Vui lòng điền đầy đủ thông tin');
+  const handleRegister = async () => {
+    if (!fullName || !email || !password || !confirmPassword) {
+      setMessage('Vui lòng điền đầy đủ thông tin bắt buộc');
       return;
     }
     
@@ -27,8 +32,39 @@ export default function Register({ onFlip }: RegisterProps) {
       return;
     }
 
-    setMessage('Đăng ký thành công!');
-    console.log('Register attempt:', { email, password });
+    setIsLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          fullName, 
+          email, 
+          password, 
+          phone: phone || null 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('Đăng ký thành công! Chuyển đến trang đăng nhập...');
+        setTimeout(() => {
+          onFlip(); // Switch to login form
+        }, 2000);
+      } else {
+        setMessage(data.error || 'Đăng ký thất bại');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setMessage('Lỗi kết nối, vui lòng thử lại');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -39,6 +75,18 @@ export default function Register({ onFlip }: RegisterProps) {
           <h2 className="text-center text-2xl font-light tracking-wide text-white mb-8">REGISTER HERE</h2>
 
           <div className="space-y-6">
+            {/* Full Name Input */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="FULL NAME"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full bg-transparent border-b-2 border-green-500 text-white placeholder-gray-400 pb-3 focus:outline-none focus:border-green-400 transition text-sm tracking-wide"
+              />
+              <User className="absolute right-0 bottom-3 text-green-500" size={20} />
+            </div>
+
             {/* Email Input */}
             <div className="relative">
               <input
@@ -49,6 +97,18 @@ export default function Register({ onFlip }: RegisterProps) {
                 className="w-full bg-transparent border-b-2 border-green-500 text-white placeholder-gray-400 pb-3 focus:outline-none focus:border-green-400 transition text-sm tracking-wide"
               />
               <Mail className="absolute right-0 bottom-3 text-green-500" size={20} />
+            </div>
+
+            {/* Phone Input */}
+            <div className="relative">
+              <input
+                type="tel"
+                placeholder="PHONE (OPTIONAL)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full bg-transparent border-b-2 border-green-500 text-white placeholder-gray-400 pb-3 focus:outline-none focus:border-green-400 transition text-sm tracking-wide"
+              />
+              <User className="absolute right-0 bottom-3 text-green-500" size={20} />
             </div>
 
             {/* Password Input */}
@@ -89,9 +149,10 @@ export default function Register({ onFlip }: RegisterProps) {
             {/* Register Button */}
             <button
               onClick={handleRegister}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded transition duration-300 mt-8 tracking-wide"
+              disabled={isLoading}
+              className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 rounded transition duration-300 mt-8 tracking-wide"
             >
-              REGISTER
+              {isLoading ? 'ĐANG ĐĂNG KÝ...' : 'REGISTER'}
             </button>
           </div>
 

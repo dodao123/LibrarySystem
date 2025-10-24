@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Star, Loader } from "lucide-react";
 import BooksGrid from "../Components/Library/BooksGrid";
+import ProtectedRoute from "../Components/ProtectedRoute";
 import Image from "next/image";
 
 interface Book {
@@ -36,39 +37,9 @@ interface ApiComicItem {
 
 export default function Library() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [libraryBooks, setLibraryBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
-  const [customBooks] = useState<Book[]>([
-    {
-      id: "c1",
-      title: "Kỷ Nguyên Bóng Đêm",
-      author: "Tác giả: Việt Độ",
-      rating: 9.5,
-      reviews: 128,
-      imageURL: "https://i.imgur.com/4YzZ6YZ.jpeg",
-      status: "ongoing",
-      category: "Fantasy",
-    },
-    {
-      id: "c2",
-      title: "Hành Trình Vô Tận",
-      author: "Tác giả: An Nhiên",
-      rating: 9.2,
-      reviews: 95,
-      imageURL: "https://i.imgur.com/ybN6EHz.jpeg",
-      status: "ongoing",
-      category: "Adventure",
-    },
-    {
-      id: "c3",
-      title: "Truyền Thuyết Long Thần",
-      author: "Tác giả: Thanh Vũ",
-      rating: 9.8,
-      reviews: 210,
-      imageURL: "https://i.imgur.com/6AbNDUh.jpeg",
-      status: "completed",
-      category: "Fantasy",
-    },
-  ]);
+  const [libraryLoading, setLibraryLoading] = useState(true);
 
   const renderStars = (rating: number) => {
     const fullRating = Math.round(rating / 2);
@@ -145,49 +116,80 @@ export default function Library() {
       }
     };
 
+    const fetchLibraryBooks = async () => {
+      try {
+        setLibraryLoading(true);
+        // Fetch all books without limit to cache them
+        const response = await fetch('/api/books');
+        const data = await response.json();
+        
+        if (data.success) {
+          setLibraryBooks(data.books);
+        } else {
+          console.error('Error fetching library books:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching library books:', error);
+      } finally {
+        setLibraryLoading(false);
+      }
+    };
+
     fetchBooks();
+    fetchLibraryBooks();
   }, []);
 
   
 
   return (
-    <main className="min-h-screen w-full overflow-x-hidden">
-      {/* Gradient Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-600 via-blue-200 to-purple-50" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10" />
-      </div>
-
-      <div className="relative pt-24 pb-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold  mb-2">
-              Thư Viện Truyện
-            </h1>
-            <p className="text-gray-600">Khám phá hàng nghìn tác phẩm hay nhất</p>
-          </div>
-
-          {/* Loading State */}
-          {loading && (
-            <div className="flex items-center justify-center h-96">
-              <div className="flex flex-col items-center gap-3">
-                <Loader className="animate-spin text-blue-500" size={40} />
-                <p className="text-gray-600">Đang tải truyện...</p>
-              </div>
-            </div>
-          )}
-
-          {/* Books Grid */}
-          {!loading && (
-            <>
-              <BooksGrid books={books} title="Truyện Đề Cử" showViewAll={true} />
-              <BooksGrid books={customBooks} title="Truyện Của Bạn" showViewAll={false} />
-            </>
-          )}
+    <ProtectedRoute>
+      <main className="min-h-screen w-full overflow-x-hidden">
+        {/* Gradient Background */}
+        <div className="fixed inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-600 via-blue-200 to-purple-50" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10" />
         </div>
-      </div>
-    </main>
+
+        <div className="relative pt-24 pb-12">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            {/* Header */}
+            <div className="mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold  mb-2">
+                Thư Viện Truyện
+              </h1>
+              <p className="text-gray-600">Khám phá hàng nghìn tác phẩm hay nhất</p>
+            </div>
+
+            {/* Loading State */}
+            {loading && (
+              <div className="flex items-center justify-center h-96">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader className="animate-spin text-blue-500" size={40} />
+                  <p className="text-gray-600">Đang tải truyện...</p>
+                </div>
+              </div>
+            )}
+
+            {/* Books Grid */}
+            {!loading && (
+              <>
+                <BooksGrid books={books} title="Truyện Đề Cử" showViewAll={true} />
+                {!libraryLoading ? (
+                  <BooksGrid books={libraryBooks} title="Truyện Bạn Có Thể Mượn Đọc" showViewAll={false} />
+                ) : (
+                  <div className="flex items-center justify-center h-96">
+                    <div className="flex flex-col items-center gap-3">
+                      <Loader className="animate-spin text-blue-500" size={40} />
+                      <p className="text-gray-600">Đang tải sách từ thư viện...</p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </main>
+    </ProtectedRoute>
   );
 }

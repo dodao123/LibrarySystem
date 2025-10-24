@@ -14,7 +14,19 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "i.imgur.com", // 👈 thêm domain Imgur
+        hostname: "i.imgur.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images-na.ssl-images-amazon.com", // 👈 thêm dòng này
         port: "",
         pathname: "/**",
       },

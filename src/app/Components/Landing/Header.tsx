@@ -3,24 +3,39 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaHome, FaBook, FaFileAlt, FaBlog, FaInfoCircle, FaEnvelope, FaGlobe, FaFacebookF, FaLinkedinIn, FaGithub } from "react-icons/fa";
+import { FaHome, FaBook, FaFileAlt, FaInfoCircle, FaFacebookF, FaLinkedinIn, FaGithub, FaSignOutAlt } from "react-icons/fa";
+import { useAuth } from "../../contexts/AuthContext";
 
-const menuItems = [
-  { label: "Home", icon: FaHome, href: "/" },
-  { label: "Library", icon: FaBook, href: "/Library" },
-  { label: "Pages", icon: FaFileAlt, href: "#" },
-  { label: "Blogs", icon: FaBlog, href: "#" },
-  { label: "About", icon: FaInfoCircle, href: "#" },
-  { label: "Contact", icon: FaEnvelope, href: "#" },
-];
+const getMenuItems = (user: { role?: string } | null) => {
+  const baseItems = [
+    { label: "Home", icon: FaHome, href: "/" },
+  ];
+
+  if (!user) {
+    return baseItems;
+  }
+
+  const userItems = [
+    { label: "Library", icon: FaBook, href: "/Library" },
+    { label: "My Borrows", icon: FaFileAlt, href: "/Borrow" },
+  ];
+
+  if (user.role === 'admin') {
+    return [
+      ...baseItems,
+      ...userItems,
+      { label: "Admin", icon: FaInfoCircle, href: "/Admin" },
+    ];
+  }
+
+  return [...baseItems, ...userItems];
+};
 
 export default function Header() {
   const pathname = usePathname();
-
-  // 🟢 Ẩn Header ở trang /Auth
-  if (pathname === "/Auth") return null;
-
+  const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -28,6 +43,9 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // 🟢 Ẩn Header ở trang /Auth
+  if (pathname === "/Auth") return null;
 
   return (
     <header
@@ -50,8 +68,7 @@ export default function Header() {
               transition-all duration-300"
           />
           <span
-            className={`text-xl font-bold tracking-wide ${scrolled ? "text-white drop-shadow-lg" : "text-white"}`}
-            style={{ fontFamily: "'Playfair Display', sans-serif" }}
+            className={`text-xl font-bold tracking-wide ${scrolled ? "text-white drop-shadow-lg" : "text-white"} font-playfair`}
           >
             MeensLIB
           </span>
@@ -59,7 +76,7 @@ export default function Header() {
 
         {/* Navigation */}
         <nav className="hidden md:flex gap-2">
-          {menuItems.map(({ label, icon: Icon, href }) => (
+          {getMenuItems(user).map(({ label, icon: Icon, href }) => (
             <Link
               key={label}
               href={href}
@@ -71,8 +88,7 @@ export default function Header() {
               <span
                 className="relative after:block after:absolute after:left-0 after:w-0 after:h-[2px] 
                             after:bg-gradient-to-r after:from-orange-400 after:to-sky-500 
-                            after:transition-all group-hover:after:w-full after:bottom-0"
-                style={{ fontFamily: "'Playfair Display', sans-serif" }}
+                            after:transition-all group-hover:after:w-full after:bottom-0 font-playfair"
               >
                 {label}
               </span>
@@ -96,9 +112,24 @@ export default function Header() {
 </div>
 
           {/* CTA */}
-          <Link href="/Auth" className="bg-gradient-to-r from-orange-500 via-orange-400 to-sky-500 text-gray-800 px-6 py-2 rounded-full font-semibold shadow hover:scale-105 hover:from-orange-400 hover:to-sky-400 transition-all">
-            Đăng Nhập
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-white text-sm">
+                Xin chào, {user.fullName}
+              </span>
+              <button
+                onClick={logout}
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full font-semibold shadow hover:scale-105 transition-all flex items-center gap-2"
+              >
+                <FaSignOutAlt size={14} />
+                Đăng Xuất
+              </button>
+            </div>
+          ) : (
+            <Link href="/Auth" className="bg-gradient-to-r from-orange-500 via-orange-400 to-sky-500 text-gray-800 px-6 py-2 rounded-full font-semibold shadow hover:scale-105 hover:from-orange-400 hover:to-sky-400 transition-all">
+              Đăng Nhập
+            </Link>
+          )}
         </div>
       </div>
     </header>

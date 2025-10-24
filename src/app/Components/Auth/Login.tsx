@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginProps {
   onFlip: () => void;
@@ -10,9 +12,50 @@ export default function Login({ onFlip }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const { login } = useAuth();
 
-  const handleLogin = () => {
-    console.log('Login attempt:', { email, password, rememberMe });
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Vui lòng điền đầy đủ email và mật khẩu');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Use AuthContext to store user data
+        login(data.user);
+        
+        // Redirect based on user role
+        if (data.user.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/Library');
+        }
+      } else {
+        setError(data.error || 'Đăng nhập thất bại');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Lỗi kết nối, vui lòng thử lại');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -23,6 +66,13 @@ export default function Login({ onFlip }: LoginProps) {
           <h2 className="text-center text-2xl font-light tracking-wide text-white mb-8">LOGIN HERE</h2>
 
           <div className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="text-center text-sm py-2 rounded text-red-400 bg-red-500/10">
+                {error}
+              </div>
+            )}
+
             {/* Email Input */}
             <div className="relative">
               <input
@@ -66,9 +116,10 @@ export default function Login({ onFlip }: LoginProps) {
             {/* Login Button */}
             <button
               onClick={handleLogin}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded transition duration-300 mt-8 tracking-wide"
+              disabled={isLoading}
+              className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 rounded transition duration-300 mt-8 tracking-wide"
             >
-              LOGIN
+              {isLoading ? 'ĐANG ĐĂNG NHẬP...' : 'LOGIN'}
             </button>
             {/* Login with Google */}
             <button

@@ -49,3 +49,5 @@ INSERT INTO books (title, isbn, category_id, author_id, publisher, publish_year,
 ('The Da Vinci Code', '9780385504201', 3, 13, 'Doubleday', 2003, 8, 'Tiểu thuyết trinh thám nổi tiếng về bí mật tôn giáo và biểu tượng học.', 'https://picsum.photos/seed/davincicode/300/450'),
 ('The Adventures of Sherlock Holmes', '9781508475312', 3, 14, 'George Newnes', 1892, 9, 'Tuyển tập truyện trinh thám kinh điển của Sherlock Holmes.', 'https://picsum.photos/seed/sherlockholmes/300/450'),
 ('The Stranger', '9780679720202', 6, 15, 'Gallimard', 1942, 6, 'Tiểu thuyết triết học nổi tiếng của Albert Camus, biểu tượng của chủ nghĩa hiện sinh.', 'https://picsum.photos/seed/thestranger/300/450');
+
+

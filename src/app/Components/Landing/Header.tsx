@@ -24,7 +24,7 @@ const getMenuItems = (user: { role?: string } | null) => {
     return [
       ...baseItems,
       ...userItems,
-      { label: "Admin", icon: FaInfoCircle, href: "/Admin" },
+      { label: "Admin", icon: FaInfoCircle, href: "/admin" },
     ];
   }
 

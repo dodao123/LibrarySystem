@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Clock, CheckCircle, XCircle, Calendar, Search, Filter } from 'lucide-react';
+import { BookOpen, Clock, CheckCircle, XCircle, Calendar, Search, Filter, Library } from 'lucide-react';
 import ProtectedRoute from '../Components/ProtectedRoute';
 import { useAuth } from '../contexts/AuthContext';
+import Link from 'next/link';
 
 interface BorrowRequest {
   request_id: number;
@@ -55,8 +56,14 @@ export default function AdminPage() {
       
       if (requestsData.success && recordsData.success) {
         // Merge requests with their corresponding records
-        const mergedRequests = requestsData.requests.map((request: any) => {
-          const record = recordsData.records.find((r: any) => r.request_id === request.request_id);
+        const mergedRequests = requestsData.requests.map((request: {
+          request_id: number;
+          [key: string]: unknown;
+        }) => {
+          const record = recordsData.records.find((r: {
+            request_id: number;
+            [key: string]: unknown;
+          }) => r.request_id === request.request_id);
           return {
             ...request,
             record_id: record?.record_id,
@@ -207,10 +214,22 @@ export default function AdminPage() {
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                Quản Lý Mượn Sách
-              </h1>
-              <p className="text-gray-600">Duyệt và quản lý các yêu cầu mượn sách</p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-bold mb-2">
+                    Quản Lý Mượn Sách
+                  </h1>
+                  <p className="text-gray-600">Duyệt và quản lý các yêu cầu mượn sách</p>
+                </div>
+                
+                <Link 
+                  href="/admin/BookManager"
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+                >
+                  <Library size={20} />
+                  Quản Lý Truyện
+                </Link>
+              </div>
             </div>
 
             {/* Search and Filter */}
@@ -272,6 +291,7 @@ export default function AdminPage() {
                         {/* Book Image */}
                         <div className="w-20 h-28 bg-gray-200 rounded flex-shrink-0">
                           {request.book_image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={request.book_image}
                               alt={request.book_title}
@@ -370,7 +390,7 @@ export default function AdminPage() {
                           {request.status === 'borrowed' && request.record_id && (
                             <div className="flex gap-2 mt-4">
                               <button
-                                onClick={() => handleReturn(request.record_id)}
+                                onClick={() => request.record_id && handleReturn(request.record_id)}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                               >
                                 Xác nhận đã trả
